@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EA第三者検証 見本報告書（自社EA RyuseiEA v0.3）｜検証専門チーム XORA</title>
+<meta name="description" content="XORAのEA第三者検証の進め方を、自社EAで実演した見本報告書。事前登録・ブローカー履歴データでの再現・2区間判定・生の件数とハッシュ。不完全な結果もそのまま開示します。">
+<style>
+body{font-family:-apple-system,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;max-width:920px;margin:0 auto;padding:24px 16px 64px;color:#1a1a1a;line-height:1.75;background:#fff}
+h1{font-size:1.55rem;line-height:1.4;margin:.2em 0}h2{font-size:1.2rem;border-left:5px solid #1a1a1a;padding-left:10px;margin-top:2.2em}h3{font-size:1.05rem;margin-top:1.6em}
+.lead{color:#444}.note{background:#fff8e1;border:1px solid #f0c36d;padding:12px 14px;border-radius:6px}
+.warn{background:#fdecea;border:1px solid #e57373;padding:12px 14px;border-radius:6px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.92rem}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;vertical-align:top}th{background:#f3f3f3}
+td.n{text-align:right;font-variant-numeric:tabular-nums}td.h code{font-size:.72rem;word-break:break-all}code{font-family:ui-monospace,Menlo,Consolas,monospace}
+.v{display:inline-block;font-weight:700;padding:2px 10px;border-radius:4px;color:#fff}.PASS{background:#2e7d32}.FAIL{background:#c62828}.INC{background:#6d6d6d}
+.box{border:2px solid #1a1a1a;padding:14px 16px;border-radius:8px}footer{margin-top:3em;border-top:1px solid #ccc;padding-top:14px;font-size:.92rem}
+.small{font-size:.85rem;color:#555}
+</style></head><body>
+<p class="small">見本報告書 ／ 作成 2026-11-23（日本時間）／ 検証専門チーム XORA（法人化準備中）</p>
+<h1>EA第三者検証 見本報告書<br>対象：自社EA「RyuseiEA v0.3」（XAUUSD・H1）</h1>
+<p class="lead">これは、XORA が有料で行う第三者検証の<strong>進め方の見本</strong>です。他社のEAではなく、私たち自身のEAで実演しています。良い結果だけでなく、<strong>途中で止まった検証・壊れたレポート・自分たちのミスもそのまま載せています</strong>。それが、この検証の商品価値だと考えているからです。</p>
+
+<div class="warn"><strong>ご注意：</strong>本書は検証方法の見本です。このEAの推奨・売買シグナル・投資助言ではなく、将来の成績を示すものでもありません。数値はすべてバックテスト（過去データでの模擬計算）で、実際の口座の損益ではありません。XORA は投資助言・利益保証・シグナル販売を行いません。</div>
+
+<h2>1. 結論</h2>
+<div class="box">
+<table>
+<tr><th>区間</th><th>期間</th><th>判定</th><th>理由（1行）</th></tr>
+<tr><td>前半</td><td>2021-01-01〜2025-01-01</td><td><span class="v INC">INCOMPLETE</span></td><td>テストが途中で止まり、MT5レポートが壊れた（期間1970年・取引0件）。2024-02-23以降は未計算。</td></tr>
+<tr><td>後半</td><td>2025-01-01〜2026-11-20</td><td><span class="v INC">INCOMPLETE</span></td><td>技術条件 E1〜E5 は PASS。E6 のうち不変条件 I4 を本書で再計算できていないため、全項目PASSとは書けない。</td></tr>
+<tr><td>参考</td><td>研究版との一致（パリティ）</td><td><span class="v FAIL">FAIL</span></td><td>事前登録の時点で「FAILのまま残る」と予告済み。予告どおりの結果。</td></tr>
+</table>
+<p><strong>総合：INCOMPLETE（判定保留）。</strong>この事前登録は「記録・執行の仕組みが正しく動くか」を確かめる技術検証で、利益の合格ラインは置いていません。したがって、下の損益の数字は合否に使っていません。</p>
+</div>
+
+<h2>2. 検証の進め方（4つの約束）</h2>
+<ol>
+<li><strong>合格ラインは測る前に文書で固定する（事前登録）。</strong>後から条件を変えない。追記した場合は、時刻と理由を書いて残す。</li>
+<li><strong>ブローカー提供の過去データで再現する。</strong>MT5 ストラテジーテスターを使い、計算方式（モデル）を明記する。</li>
+<li><strong>期間を2区間に分け、両方で判定する。</strong>片方だけ良い、を見逃さないため。</li>
+<li><strong>生の件数とファイルのハッシュ（SHA-256）を載せる。</strong>判定は PASS／FAIL／INCOMPLETE で書き、悪い結果も消さない。</li>
+</ol>
+
+<h2>3. 事前登録</h2>
+<table>
+<tr><th>項目</th><th>内容</th></tr>
+<tr><td>ファイル</td><td><code>PREREG_RyuseiEA_v03.md</code></td></tr>
+<tr><td>SHA-256（現在の版）</td><td class="h"><code>24d85f380466b46b7b0a9a4c2e5985fc4e7930a1fc4a7f988870a949802e8070</code></td></tr>
+<tr><td>登録時刻</td><td>2026-11-22 13:25（日本時間）。最初の実行開始は 13:26:53（<code>v03_run.log</code>）。</td></tr>
+<tr><td>合格条件</td><td>技術PASS ＝ E1〜E6 すべて成立。E1 CSVの1行目が見出し／E2 2回目の実行が1回目のファイルを変えない／E3 EA台帳の脚数＝テスターの脚数／E4 仮想の脚の記録が前版 v0.2 と一致／E5 採用時NGだった脚は、約定前に解除記録がある／E6 致命的エラー・配列範囲外・ゼロ除算が0、不変条件 I1/I2/I4 成立、デモ口座ロックあり。</td></tr>
+<tr><td>対象EA</td><td><code>RyuseiEA_v03_demo.mq5</code>（MD5 091A99FC…、登録文の記載と一致）、<code>.ex5</code>（MD5 F685E5B9…、一致）。実行ログに記録された ex5 の MD5 も全実行で同じ値。</td></tr>
+</table>
+<div class="note"><strong>自己開示（事前登録の弱点）</strong>
+<ul>
+<li>事前登録ファイルには、登録後に2回の追記があります（「13:33」付：E2の判定方法の言い換え／15:20：コスト0.51ドルの扱いの明確化）。どちらも後半の結果が出る前の追記で、理由を本文に書いています。ただし、<strong>登録直後の原文のハッシュを外部（公開リポジトリ等）に固定していなかった</strong>ため、原文が改変されていないことを第三者が独立に証明する手段はありません。上のハッシュは追記後の現在の版です。</li>
+<li>15:20 の追記には「実ティックの bid/ask で約定」と書かれていますが、実際のテスターログと設定は <strong>1分足OHLC</strong> です（下記）。追記の記述が誤りで、本書では実ログを正とします。</li>
+<li>改善：依頼案件では、事前登録の確定直後にハッシュを公開の場所へ記録してから測定を始めます。</li>
+</ul></div>
+
+<h2>4. 再現の条件</h2>
+<table>
+<tr><th>項目</th><th>値</th><th>出所</th></tr>
+<tr><td>テスター</td><td>MetaTrader 5 ストラテジーテスター（MetaTester 5 build 6249）</td><td><code>agent_run.log</code></td></tr>
+<tr><td>過去データ</td><td>ブローカー（Vantage Trading Ltd）のサーバーから同期した XAUUSD の履歴。ヒストリー品質 99%（MT5レポートの表示）</td><td><code>R3_back.htm</code>、<code>agent_run.log</code></td></tr>
+<tr><td>計算方式</td><td><strong>1分足OHLC</strong>（設定 Model=1、ログ「1 minutes OHLC ticks generating」）。<strong>実ティックではありません。</strong>1分足の始値・高値・安値・終値から値動きを生成する方式です。</td><td><code>R3_back.ini</code>、<code>R3_front.ini</code>、<code>agent_run.log</code></td></tr>
+<tr><td>銘柄・時間足</td><td>XAUUSD・H1</td><td>同上</td></tr>
+<tr><td>初期資金・レバレッジ</td><td>10,000 USD・1:100</td><td>同上</td></tr>
+<tr><td>口座</td><td>デモ口座限定（EAの起動時にデモ以外なら停止するロックがソースにあることを確認）</td><td><code>RyuseiEA_v03_demo.mq5</code></td></tr>
+</table>
+
+<h2>5. 前半：2021-01-01〜2025-01-01 <span class="v INC">INCOMPLETE</span></h2>
+<table>
+<tr><th>確認したこと</th><th>実測値</th><th>出所</th></tr>
+<tr><td>実行</td><td>2026-11-22 14:20:36 開始 → 17:42:50 終了記録（終了コード0、202.2分）</td><td><code>v03_run.log</code></td></tr>
+<tr><td>テスターログ</td><td>「Test passed」「final balance」の行が<strong>ない</strong>。最後は「tester forced to close」</td><td><code>R3_front/agent_run.log</code></td></tr>
+<tr><td>MT5レポート</td><td><strong>壊れている</strong>：期間「M0 (1970.01.01 - 1970.01.01)」、取引数 0、総損益 0</td><td><code>R3_front.htm</code></td></tr>
+<tr><td>EAの記録が届いた最後のテスト内時刻</td><td>仮想ログ 2024.02.23 15:00 ／ 執行ログ 2024.01.09 15:38:40</td><td>CSV各ファイル</td></tr>
+<tr><td>執行ログの件数</td><td>FILL 97／CLOSE 97／ENTRY_DEFERRED 15／SKIP 1</td><td><code>RyuseiEA_exec_log_R3_front.csv</code></td></tr>
+<tr><td>EA台帳（参考値・判定に使わない）</td><td>40脚、合計 +588.48 USD、PF 1.73、勝ち23・負け17（SL 17／BE 11／TP 12）、期間 2021.01.25〜2024.01.09</td><td><code>RyuseiOne_leg_history_R3_front.csv</code></td></tr>
+<tr><td>E3（台帳脚数＝テスター脚数）</td><td>台帳40 ／ テスター側はレポート破損のため数えられない → 判定不能</td><td><code>parse2_out.txt</code></td></tr>
+<tr><td>残り期間の再実行</td><td>2024-01-01〜2025-01-01 の再実行を 2026-11-23 00:18:16 に開始 → 0.2分で異常終了（終了コード -1000012353）。結果なし</td><td><code>v03_run.log</code>、<code>R3_front2024.ini</code></td></tr>
+</table>
+<p>途中停止の原因は社内記録では停電です。ログから原因そのものは特定できません。<strong>完全な実行がない区間は合否を出しません。</strong>上の台帳の数字は「ここまでは動いた」という記録で、成績の主張ではありません。</p>
+
+<h2>6. 後半：2025-01-01〜2026-11-20 <span class="v INC">INCOMPLETE</span></h2>
+<h3>6-1. MT5レポートとテスターログ（生の数字）</h3>
+<table>
+<tr><th>項目</th><th>値</th></tr>
+<tr><td>実行</td><td>2026-11-22 13:32:31 開始 → 14:20:36 終了（48.1分）。ログに「Test passed in 0:47:53」</td></tr>
+<tr><td>レポート上の期間</td><td>H1 (2025.01.01 - 2026.11.20)</td></tr>
+<tr><td>バー数／生成ティック数</td><td>11,161 ／ 2,672,630</td></tr>
+<tr><td>取引数／約定数</td><td>55 ／ 110（新規 55・決済 55）</td></tr>
+<tr><td>総損益（バックテスト）</td><td>+2,277.81 USD（総利益 3,835.69／総損失 -1,557.88）</td></tr>
+<tr><td>プロフィットファクター</td><td>2.46</td></tr>
+<tr><td>残高最大ドローダウン／証拠金最大ドローダウン</td><td>635.76 (6.33%) ／ 966.01 (9.33%)</td></tr>
+<tr><td>勝ちトレード／負けトレード</td><td>23 (41.82%) ／ 32 (58.18%)</td></tr>
+</table>
+<h3>6-2. 偏りの開示</h3>
+<p>脚（同じ狙いの取引のまとまり）24本のうち、<strong>最大の1本（seq 310）が +1,405.00 USD で、総損益の 61.7%</strong> を占めます。2位は +743.32、3位は +455.72。少数の大勝ちに強く依存した結果です（<code>parity2_R3_back.json</code>）。</p>
+<h3>6-3. 事前登録の条件ごとの判定</h3>
+<table>
+<tr><th>条件</th><th>実測</th><th>判定</th></tr>
+<tr><td>E1 CSVの1行目が見出し</td><td>3ファイルとも見出し</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E2 2回目の実行で1回目のファイルが変わらない（短期テストで判定）</td><td>W1 と W1b の3ファイルの MD5 が一致</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E3 台帳脚数＝テスター脚数</td><td>24 ＝ 24</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E4 仮想の記録が前版と一致</td><td>1,071行 ＝ 1,071行、完全一致</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E5 採用時NGの脚は約定前に解除記録あり</td><td>17本中17本（欠け0）</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E6 エラー0</td><td>critical／array out of range／zero divide：いずれも0件</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E6 I1（約定＝新規約定数）／I2（決済＋未決済＝約定）</td><td>55 ＝ 55 ／ 55＋0 ＝ 55</td><td><span class="v PASS">PASS</span></td></tr>
+<tr><td>E6 I4</td><td>本書の作成時に定義と再計算を確認できていない</td><td><span class="v INC">INCOMPLETE</span></td></tr>
+<tr><td>E6 デモ口座ロック</td><td>ソースにロックの行あり</td><td><span class="v PASS">PASS</span></td></tr>
+</table>
+<h3>6-4. まだ説明できていない差・不具合</h3>
+<ul>
+<li><strong>台帳とテスターの差：</strong>EA台帳は 24脚・+2,233.41 USD・PF 2.47、テスター側は 24脚・+2,277.81 USD。差の 44.40 USD は未解明です（作業記録では、スワップ -43.41 では差の向きが合わないと判定）。</li>
+<li><strong>集計スクリプトの誤り：</strong>最初の集計では台帳を「12脚・-160.03 USD」と出しました。日付を文字列で比べていたバグで、修正後は24脚です。誤った出力ファイルも消さずに残しています（<code>R3_back/parse2_out.txt</code>）。</li>
+<li><strong>執行の異常：</strong>決済失敗 CLOSE_FAIL 3件、再試行失敗 3件、取り残しポジション ORPHAN_POSITION 3件（<code>RyuseiEA_exec_log_R3_back.csv</code>）。</li>
+<li><strong>研究版との一致（パリティ）：FAIL。</strong>研究版にない脚が残ることは事前登録に予告済みで、作業記録でも予告どおり FAIL です。研究版側の原本は本書の対象外のため、ここでは再計算していません。</li>
+</ul>
+
+<h2>7. 使ったファイルとハッシュ（SHA-256）</h2>
+<p class="small">原本は当方で保管しています（設定ファイルに口座番号を含むため非公開）。ご依頼主には原本を提供し、下のハッシュで同一性を照合できます。ハッシュは EA 作業PC 上の原本と、本書作成用の写しの両方で計算し、全件一致を確認しました。</p>
+<table><tr><th>ファイル</th><th>中身</th><th>SHA-256</th></tr><tr><td><code>PREREG_RyuseiEA_v03.md</code></td><td>事前登録（合格条件）</td><td class="h"><code>24d85f380466b46b7b0a9a4c2e5985fc4e7930a1fc4a7f988870a949802e8070</code></td></tr><tr><td><code>CHECKPOINT.md</code></td><td>作業記録（追記のみ）</td><td class="h"><code>9e60d07b85812bfb7bf2dae83d3428ef646c7e1de0f21e6b27a8a527f42a5391</code></td></tr><tr><td><code>v03_run.log</code></td><td>実行ログ（開始・終了時刻）</td><td class="h"><code>ea9f2fcfdaf204ec8049fd81288119f370e434c4dd8d491ac3a74206d490ab81</code></td></tr><tr><td><code>R3_front.ini</code></td><td>前半の実行設定</td><td class="h"><code>704b861b64b766b574b5179079c249461373b8853f20e05e7a080e1adcbdf4f6</code></td></tr><tr><td><code>R3_back.ini</code></td><td>後半の実行設定</td><td class="h"><code>412028adfbb116ee9725c069e2f1cc46802c4014b154985bb35868073164e52d</code></td></tr><tr><td><code>R3_front2024.ini</code></td><td>前半残りの再実行設定</td><td class="h"><code>dbe503956a194bfcc2c2a185e8d8fea9814c4b2f9e59c81369b54e18ab0f3b3c</code></td></tr><tr><td><code>RyuseiEA_v03_demo.mq5</code></td><td>EAソース</td><td class="h"><code>0b98b0bcf758c988bb28920c3d67da871165c83d548a2cab2a85d6cf4be5c3b1</code></td></tr><tr><td><code>RyuseiEA_v03_demo.ex5</code></td><td>EA実行ファイル</td><td class="h"><code>4185076fd9c36da63d6ec52e4411df1b020b3b76893b2228f054d8164d509664</code></td></tr><tr><td><code>R3_back/R3_back.htm</code></td><td>後半 MT5レポート</td><td class="h"><code>a57d8d99a69aaa503c51d39ee15803cb3bd6ec69900b70db8dafd1b989cc6882</code></td></tr><tr><td><code>R3_back/agent_run.log</code></td><td>後半 テスターログ</td><td class="h"><code>ab1a84a2b166464519895a66e2d6c3ed5112853bf88dc130c1d38b8bc7a851f9</code></td></tr><tr><td><code>R3_back/RyuseiOne_leg_history_R3_back.csv</code></td><td>後半 EA台帳（脚単位）</td><td class="h"><code>6ad0ba8bb9a9c71af8a7c4fb5408721f23ff0bc82a14336365e4898a02b6353d</code></td></tr><tr><td><code>R3_back/RyuseiEA_exec_log_R3_back.csv</code></td><td>後半 執行ログ</td><td class="h"><code>983d69d0d7318e662084f3e7d51d5e978a593170999b8cec75f514dbd2b8108c</code></td></tr><tr><td><code>R3_back/RyuseiOne_log_R3_back.csv</code></td><td>後半 仮想ログ</td><td class="h"><code>a39092a27f471da4b562dd0790cdd2597c7dd0a876a46a3bf2a023d42f2103ee</code></td></tr><tr><td><code>R3_back/echeck.json</code></td><td>後半 E1/E4/E5 機械判定</td><td class="h"><code>94821730bcd0a86b7099ca6417473529d9d8e939c50e66602f20c2ba7a569ba6</code></td></tr><tr><td><code>R3_back/parity2_R3_back.json</code></td><td>後半 集計（修正後）</td><td class="h"><code>187414c034386ba046da2e34b95f113bcdb6baad563c13d18c345b35e8725296</code></td></tr><tr><td><code>R3_back/parse2_out.txt</code></td><td>後半 集計（修正前・誤集計を含む）</td><td class="h"><code>3eb8c5c66cc5efd2fad7b48ffaa565dd181d226299c8e84db6fc4fbcda5bf239</code></td></tr><tr><td><code>R3_front/R3_front.htm</code></td><td>前半 MT5レポート（破損）</td><td class="h"><code>ea21db9b9c59250eda023e36d7176f393505f9f500dfd52ca51b4a87cf267737</code></td></tr><tr><td><code>R3_front/agent_run.log</code></td><td>前半 テスターログ</td><td class="h"><code>ed4478f4fd92d3de82e9899d91a6db377c751a2977cf812cc74a17f40cbc96ba</code></td></tr><tr><td><code>R3_front/RyuseiOne_leg_history_R3_front.csv</code></td><td>前半 EA台帳（脚単位）</td><td class="h"><code>3ec59ae2754714641eed3eb0d3197e3b6189cdb51064e6b7755cd74e644f53a0</code></td></tr><tr><td><code>R3_front/RyuseiEA_exec_log_R3_front.csv</code></td><td>前半 執行ログ</td><td class="h"><code>31cd3750b975bb325a26ab4600b970b46f17125f57de2167d6144118c3fa2606</code></td></tr><tr><td><code>R3_front/RyuseiOne_log_R3_front.csv</code></td><td>前半 仮想ログ</td><td class="h"><code>d76c47f19d39e170ed3c158bb79ed5602fa7f73c6384cac7ab1441f6fff055ca</code></td></tr><tr><td><code>R3_front/parse2_out.txt</code></td><td>前半 集計</td><td class="h"><code>f257cca4e583d22ba16e67205cbe3b96a78e15813a59e53a7cc019053ed87c45</code></td></tr><tr><td><code>R3_front/parity2_R3_front.json</code></td><td>前半 集計</td><td class="h"><code>95bdfc85983c42681cebef45894d8cc33ee5b31250667fab152cff37183d9b62</code></td></tr></table>
+
+<h2>8. ご依頼の場合</h2>
+<p>販売ページで公表されている成績を、同じ手順で検証します。合格ラインは測定の前にご一緒に文書で固定し、結果は良否に関わらず全文公開が条件です。ご用意いただくもの：EA ファイル（ex5 または mq5）、公表成績とその算出条件、対象期間の指定。</p>
+
+<footer>
+<p><strong>検証専門チーム XORA（法人化準備中）</strong><br>運営責任者：神﨑隆聖<br>連絡先：<a href="mailto:hello.xoraworld@gmail.com">hello.xoraworld@gmail.com</a></p>
+<p class="small">本書は検証方法の見本であり、特定のEA・商品の推奨、売買シグナル、投資助言ではありません。過去のバックテスト結果は将来の成績を保証しません。</p>
+</footer>
+</body></html>
